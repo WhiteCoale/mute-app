@@ -1,7 +1,7 @@
 from customtkinter import *
 from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
 from pynput import keyboard
-
+import time
 
 def get_all_session_names():
     res = []
@@ -54,6 +54,20 @@ def start_click():
     button.configure(text="Start", fg_color="green", hover_color="darkgreen")
 
 
+def update_dropdown():
+    while True:
+        try:
+            process_names = get_all_session_names()
+            program_input.configure(values=process_names)
+            current_value = program_input.get()
+            if current_value not in process_names:
+                program_input.set("")
+            app.update()
+        except():
+            time.sleep(1)
+        time.sleep(0.2)
+
+
 process_names = get_all_session_names()
 
 app = CTk()
@@ -75,7 +89,9 @@ mute_button.pack(expand=True, pady=15, padx=20)
 anmute_button = CTkEntry(master=frame, placeholder_text="", width=40, justify="center")
 anmute_button.pack(expand=True, pady=15, padx=20)
 
-button = CTkButton(master=frame, text="Start", fg_color="green", hover_color="darkgreen", command=start_click, font=("", 18))
+button = CTkButton(master=frame, text="Start", fg_color="green", hover_color="darkgreen", command=start_click,
+                   font=("", 18))
 button.pack(expand=True, fill="both", pady=(30, 15), padx=30)
 
+update_dropdown()
 app.mainloop()
