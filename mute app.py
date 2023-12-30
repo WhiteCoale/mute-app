@@ -3,6 +3,18 @@ from pycaw.pycaw import AudioUtilities, ISimpleAudioVolume
 from pynput import keyboard
 
 
+def get_all_session_names():
+    res = []
+    filter_arr = ["PowerToys.Peek.UI.exe"]
+    sessions = AudioUtilities.GetAllSessions()
+    for session in sessions:
+        if session.Process:
+            if session.Process.name() not in filter_arr:
+                res.append(session.Process.name())
+
+    return list(set(res))
+
+
 def mute(mute_hotkey, anmute_hotkey, program):
     sessions = AudioUtilities.GetAllSessions()
     for session in sessions:
@@ -42,6 +54,8 @@ def start_click():
     button.configure(text="Start", fg_color="green", hover_color="darkgreen")
 
 
+process_names = get_all_session_names()
+
 app = CTk()
 app.title("mute app")
 app.geometry("300x350")
@@ -50,17 +64,18 @@ app.eval('tk::PlaceWindow . center')
 frame = CTkFrame(master=app, fg_color="grey")
 frame.grid(row=1, column=1)
 frame.place(relx=0.5, rely=0.5, anchor="center")
-
 CTkLabel(master=frame, text="mute app", font=("Arial Bold", 20), justify="center").pack(expand=True, pady=(30, 15))
-program_input = CTkEntry(master=frame, placeholder_text="", width=100, justify="center")
+
+program_input = CTkComboBox(master=frame, values=process_names)
 program_input.pack(expand=True, pady=15, padx=20)
 
 mute_button = CTkEntry(master=frame, placeholder_text="", width=40, justify="center")
 mute_button.pack(expand=True, pady=15, padx=20)
+
 anmute_button = CTkEntry(master=frame, placeholder_text="", width=40, justify="center")
 anmute_button.pack(expand=True, pady=15, padx=20)
+
 button = CTkButton(master=frame, text="Start", fg_color="green", hover_color="darkgreen", command=start_click, font=("", 18))
 button.pack(expand=True, fill="both", pady=(30, 15), padx=30)
-
 
 app.mainloop()
